@@ -8,6 +8,25 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 
+// TEMP: Allow all origins for CORS (for debugging)
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
+// Log all incoming requests for debugging
+app.use((req, res, next) => {
+  console.log(
+    `[${new Date().toISOString()}] ${req.method} ${req.url} from ${
+      req.headers.origin
+    }`
+  );
+  next();
+});
+
 // Improved CORS setup for Render
 const allowedOrigins = [
   "https://protfolio-3lht.onrender.com", // backend itself
