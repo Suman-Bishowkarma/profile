@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 
-// TEMP: Allow all origins for CORS (for debugging)
+// Only use one CORS middleware: allow all origins for debugging
 app.use(
   cors({
     origin: "*",
@@ -27,24 +27,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Improved CORS setup for Render
-const allowedOrigins = [
-  "https://protfolio-3lht.onrender.com", // backend itself
-  "https://profile-sumanbishowkarma.vercel.app", // deployed frontend domain (replace with your actual domain if different)
-  "http://localhost:5173", // local dev
-];
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
 app.use(express.json());
 
 // Create transporter for Gmail
