@@ -81,9 +81,12 @@ const Contact = () => {
       console.error("Error sending message:", error);
 
       // Check if it's a network error (server not running)
-      if (error.message.includes("fetch")) {
+      if (
+        error.message.includes("fetch") ||
+        error.message.includes("Failed to fetch")
+      ) {
         alert(
-          "Cannot connect to server. Please make sure the backend server is running on port 3001."
+          "Cannot connect to server. Please make sure the backend server is running and accessible at https://protfolio-3lht.onrender.com. If you are seeing this on the deployed site, the backend may be temporarily unavailable."
         );
       } else {
         alert(
