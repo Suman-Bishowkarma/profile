@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Decal,
@@ -20,7 +20,7 @@ const Ball = (props) => {
       <mesh castShadow receiveShadow scale={2.75}>
         <icosahedronGeometry args={[1, 1]} />
         <meshStandardMaterial
-          color='#fff8eb'
+          color="#fff8eb"
           polygonOffset
           polygonOffsetFactor={-5}
           flatShading
@@ -38,19 +38,38 @@ const Ball = (props) => {
 };
 
 const BallCanvas = ({ icon }) => {
-  return (
-    <Canvas
-      frameloop='demand'
-      dpr={[1, 2]}
-      gl={{ preserveDrawingBuffer: true }}
-    >
-      <Suspense fallback={<CanvasLoader />}>
-        <OrbitControls enableZoom={false} />
-        <Ball imgUrl={icon} />
-      </Suspense>
+  const [webglError, setWebglError] = useState(false);
 
-      <Preload all />
-    </Canvas>
+  // Try/catch for Canvas errors (WebGL/context loss)
+  return (
+    <div className="w-full h-full min-w-0 min-h-0 overflow-hidden flex items-center justify-center">
+      {!webglError ? (
+        <Canvas
+          frameloop="demand"
+          dpr={[1, 2]}
+          gl={{ preserveDrawingBuffer: true }}
+          style={{ width: "100%", height: "100%" }}
+          onCreated={({ gl }) => {
+            gl.getContext();
+            gl.domElement.addEventListener("webglcontextlost", () =>
+              setWebglError(true)
+            );
+            gl.domElement.addEventListener("webglcontextcreationerror", () =>
+              setWebglError(true)
+            );
+          }}
+          onError={() => setWebglError(true)}
+        >
+          <Suspense fallback={<CanvasLoader />}>
+            <OrbitControls enableZoom={false} />
+            <Ball imgUrl={icon} />
+          </Suspense>
+          <Preload all />
+        </Canvas>
+      ) : (
+        <img src={icon} alt="tech" className="w-12 h-12 object-contain" />
+      )}
+    </div>
   );
 };
 

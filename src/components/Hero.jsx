@@ -26,18 +26,20 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className={`relative w-full h-screen mx-auto`}>
+    <section className={`relative w-full min-h-screen h-auto mx-auto`}>
+      {" "}
+      {/* min-h-screen for mobile, h-auto fallback */}
       <div
-        className={`absolute inset-0 top-[120px]  max-w-7xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}
+        className={`absolute inset-0 top-[100px] max-w-7xl mx-auto ${styles.paddingX} flex flex-col sm:flex-row items-start gap-5`}
       >
-        <div className="flex flex-col justify-center items-center mt-5">
+        <div className="flex flex-row sm:flex-col justify-center items-center mt-5">
           <div className="w-5 h-5 rounded-full bg-[#915EFF]" />
           <div className="w-1 sm:h-80 h-40 violet-gradient" />
         </div>
 
-        <div>
+        <div className="flex-1 min-w-0">
           <motion.h1
-            className={`${styles.heroHeadText} text-white`}
+            className={`${styles.heroHeadText} text-white break-words`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -56,7 +58,7 @@ const Hero = () => {
           </motion.h1>
 
           <motion.p
-            className={`${styles.heroSubText} mt-2 text-white-100`}
+            className={`${styles.heroSubText} mt-2 text-white-100 break-words`}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -91,9 +93,9 @@ const Hero = () => {
           </motion.p>
         </div>
       </div>
-
-      <ComputersCanvas />
-
+      <div className="w-full h-[300px] sm:h-auto">
+        <ComputersCanvas />
+      </div>
       <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center">
         <a href="#about">
           <div className="w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
