@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const app = express();
@@ -9,8 +9,6 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors({ origin: "*" }));
 app.use(express.json());
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Contact form endpoint
 app.post("/api/contact", async (req, res) => {
@@ -21,34 +19,38 @@ app.post("/api/contact", async (req, res) => {
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
-    const { data, error } = await resend.emails.send({
-      from: "Portfolio Contact <onboarding@resend.dev>",
-      to: [process.env.GMAIL_USER],
+
+    // Nodemailer transporter setup
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
+
+    // Email options
+    const mailOptions = {
+      from: `Portfolio Contact <${process.env.GMAIL_USER}>`,
+      to: process.env.GMAIL_USER,
       subject: `Portfolio Contact: Message from ${name}`,
       html: `<div><h2>New Contact Form Message</h2><p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><h3>Message:</h3><p>${message.replace(
         /\n/g,
         "<br>"
       )}</p></div>`,
-      reply_to: email,
-    });
-    if (error) {
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Failed to send message. Please try again later.",
-        });
-    }
+      replyTo: email,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
     res
       .status(200)
       .json({ success: true, message: "Message sent successfully!" });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to send message. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to send message. Please try again later.",
+    });
   }
 });
 
